@@ -2,6 +2,8 @@
 var mqstreams = require('mqstreams')
   , duplexer  = require('reduplexer')
   , through   = require('through2')
+  , inherits  = require('inherits')
+  , events    = require('events')
 
 function MQBroker(mq) {
   if (!(this instanceof MQBroker))
@@ -20,20 +22,25 @@ function MQBroker(mq) {
   this._mq = mqstreams(mq)
 }
 
+inherits(MQBroker, events.EventEmitter)
+
 MQBroker.prototype.stream = function() {
 
   var readable = this._mq.readable()
+    , that     = this
 
     , writable = through.obj({
         highWaterMark: 1
       }, function(chunk, enc, done) {
 
         switch(chunk.cmd) {
-          case "subscribe":
+          case 'subscribe':
             readable.subscribe(chunk.topic)
+            that.emit('subscribe', chunk)
             break
-          case "publish":
+          case 'publish':
             this.push(chunk)
+            that.emit('publish', chunk)
             break
         }
         done()

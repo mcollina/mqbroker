@@ -34,3 +34,36 @@ test('subscribing and publishing', function(t) {
 test('subscribing and publishing with a given mq', function(t) {
   subscribeAndPublish(t, mqemitter())
 })
+
+test('publish event', function(t) {
+  t.plan(1)
+
+  var broker = mqbroker()
+    , msg    = {
+          cmd: 'publish'
+        , topic: 'hello'
+        , payload: 'world'
+      }
+
+  broker.on('publish', function(data) {
+    t.deepEqual(data, msg)
+  })
+
+  broker.stream().end(msg)
+})
+
+test('subscribe event', function(t) {
+  t.plan(1)
+
+  var broker = mqbroker()
+    , msg    = {
+          cmd: 'subscribe'
+        , topic: 'hello'
+      }
+
+  broker.on('subscribe', function(data) {
+    t.deepEqual(data, msg)
+  })
+
+  broker.stream().end(msg)
+})

@@ -38,6 +38,7 @@
     "mqstreams": "~0.1.0",
     "readable-stream": "~1.0.26",
     "through2": "^0.4.1",
-    "reduplexer": "0.0.2"
+    "reduplexer": "0.0.2",
+    "inherits": "^2.0.1"
   }
 }
