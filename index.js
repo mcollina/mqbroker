@@ -34,6 +34,10 @@ MQBroker.prototype.stream = function() {
         highWaterMark: 1
       }, function(chunk, enc, done) {
 
+        if (!chunk.topic) {
+          return stream.emit('error', new Error('no topic specified'))
+        }
+
         switch(chunk.cmd) {
           case 'subscribe':
             readable.subscribe(chunk.topic)

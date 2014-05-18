@@ -116,3 +116,20 @@ test('unsubscribe event', function(t) {
 
   stream.end(msg)
 })
+
+test('error with no topic', function(t) {
+  t.plan(1)
+
+  var broker = mqbroker()
+    , msg    = {
+          cmd: 'publish'
+        , payload: 'world'
+      }
+    , stream  = broker.stream()
+
+  stream.on('error', function(err) {
+    t.equal(err.message, 'no topic specified')
+  })
+
+  stream.end(msg)
+})

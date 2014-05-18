@@ -1,6 +1,6 @@
 {
   "name": "mqbroker",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Barebone Publish-Subscribe Broker node style",
   "main": "index.js",
   "scripts": {
