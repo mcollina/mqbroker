@@ -28,6 +28,7 @@ MQBroker.prototype.stream = function() {
 
   var readable = this._mq.readable()
     , that     = this
+    , stream
 
     , writable = through.obj({
         highWaterMark: 1
@@ -36,15 +37,15 @@ MQBroker.prototype.stream = function() {
         switch(chunk.cmd) {
           case 'subscribe':
             readable.subscribe(chunk.topic)
-            that.emit('subscribe', chunk)
+            that.emit('subscribe', chunk, stream)
             break
           case 'unsubscribe':
             readable.unsubscribe(chunk.topic)
-            that.emit('subscribe', chunk)
+            that.emit('unsubscribe', chunk, stream)
             break
           case 'publish':
             this.push(chunk)
-            that.emit('publish', chunk)
+            that.emit('publish', chunk, stream)
             break
         }
         done()
@@ -53,10 +54,12 @@ MQBroker.prototype.stream = function() {
 
   writable.pipe(this._mq.writable())
 
-  return duplexer(writable, readable, {
+  stream = duplexer(writable, readable, {
       objectMode: true
     , highWaterMark: 1
   })
+
+  return stream
 }
 
 module.exports = MQBroker

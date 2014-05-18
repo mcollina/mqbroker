@@ -36,7 +36,7 @@ test('subscribing and publishing with a given mq', function(t) {
 })
 
 test('publish event', function(t) {
-  t.plan(1)
+  t.plan(2)
 
   var broker = mqbroker()
     , msg    = {
@@ -44,28 +44,32 @@ test('publish event', function(t) {
         , topic: 'hello'
         , payload: 'world'
       }
+    , stream  = broker.stream()
 
-  broker.on('publish', function(data) {
+  broker.on('publish', function(data, client) {
     t.deepEqual(data, msg)
+    t.equal(client, stream)
   })
 
-  broker.stream().end(msg)
+  stream.end(msg)
 })
 
 test('subscribe event', function(t) {
-  t.plan(1)
+  t.plan(2)
 
   var broker = mqbroker()
     , msg    = {
           cmd: 'subscribe'
         , topic: 'hello'
       }
+    , stream  = broker.stream()
 
-  broker.on('subscribe', function(data) {
+  broker.on('subscribe', function(data, client) {
     t.deepEqual(data, msg)
+    t.equal(client, stream)
   })
 
-  broker.stream().end(msg)
+  stream.end(msg)
 })
 
 test('unsubscribe', function(t) {
@@ -93,4 +97,22 @@ test('unsubscribe', function(t) {
   stream.on('data', function(data) {
     t.ok(false, 'never emits data')
   })
+})
+
+test('unsubscribe event', function(t) {
+  t.plan(2)
+
+  var broker = mqbroker()
+    , msg    = {
+          cmd: 'unsubscribe'
+        , topic: 'hello'
+      }
+    , stream  = broker.stream()
+
+  broker.on('unsubscribe', function(data, client) {
+    t.deepEqual(data, msg)
+    t.equal(client, stream)
+  })
+
+  stream.end(msg)
 })
