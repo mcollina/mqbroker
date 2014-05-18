@@ -67,3 +67,30 @@ test('subscribe event', function(t) {
 
   broker.stream().end(msg)
 })
+
+test('unsubscribe', function(t) {
+  var broker = mqbroker()
+    , stream = broker.stream()
+    , sub    = {
+          cmd: 'subscribe'
+        , topic: 'hello'
+      }
+    , msg    = {
+          cmd: 'publish'
+        , topic: 'hello'
+        , payload: 'world'
+      }
+
+  stream.write(sub, function() {
+    sub.cmd = 'unsubscribe'
+    stream.write(sub, function() {
+      broker.stream().end(msg, function() {
+        t.end()
+      })
+    })
+  })
+
+  stream.on('data', function(data) {
+    t.ok(false, 'never emits data')
+  })
+})

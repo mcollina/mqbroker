@@ -38,6 +38,10 @@ MQBroker.prototype.stream = function() {
             readable.subscribe(chunk.topic)
             that.emit('subscribe', chunk)
             break
+          case 'unsubscribe':
+            readable.unsubscribe(chunk.topic)
+            that.emit('subscribe', chunk)
+            break
           case 'publish':
             this.push(chunk)
             that.emit('publish', chunk)
